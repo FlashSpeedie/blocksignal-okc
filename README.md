@@ -2,9 +2,27 @@
 
 **Know what changed on your block.** Independent civic infrastructure transparency for Oklahoma City residents.
 
+![BlockSignal OKC homepage](docs/screenshots/home.png)
+
 ## Overview
 
-BlockSignal OKC tracks changes to public infrastructure projects from official Oklahoma City government sources. It provides a searchable project directory, a reverse-chronological change feed, and transparent source attribution — so residents can verify information directly.
+Public infrastructure and planning information for Oklahoma City is spread across multiple government webpages, project portals, maps, PDFs, and separate agency pages. Finding a project is one problem; understanding what has changed since the last available public record is another.
+
+BlockSignal OKC collects data from verified official sources, normalizes it into a consistent schema, and tracks material field-level changes between snapshots. Every change links to the original government record so residents can verify information directly.
+
+## Screenshots
+
+| Homepage | Project Explorer |
+|----------|------------------|
+| ![Homepage](docs/screenshots/home.png) | ![Projects](docs/screenshots/projects.png) |
+
+| Change Feed | Source Directory |
+|-------------|------------------|
+| ![Changes](docs/screenshots/changes.png) | ![Sources](docs/screenshots/sources.png) |
+
+| Mobile View | About / Methodology |
+|-------------|---------------------|
+| ![Mobile](docs/screenshots/mobile.png) | ![About](docs/screenshots/about.png) |
 
 ## Features
 
@@ -17,6 +35,53 @@ BlockSignal OKC tracks changes to public infrastructure projects from official O
 - **Mobile-First** — Responsive design with touch-friendly controls
 - **Accessible** — Semantic HTML, keyboard navigation, screen reader support
 
+## How Change Detection Works
+
+The core of BlockSignal is its deterministic, snapshot-based change detection:
+
+1. **Fetch** — Retrieve records from official sources via adapters (HTML scraper, ArcGIS FeatureServer, JSON API)
+2. **Validate** — Validate against Zod schemas, reject malformed records
+3. **Normalize** — Convert to consistent schema while preserving meaning (trim whitespace, normalize dates, standardize numbers)
+4. **Match** — Match to existing projects by stable external ID; conservative matching prevents incorrect merges
+5. **Snapshot** — Create immutable snapshot with content fingerprint (hash of all structured fields)
+6. **Compare** — Field-level diff against previous accepted snapshot; ignore volatile fields (timestamps, formatting, HTML)
+7. **Record** — Create ChangeEvents for material differences with classification (status, schedule, funding, scope, location, document, metadata)
+8. **Deduplicate** — Stable deduplication keys prevent duplicate events
+
+### Idempotency
+
+- Identical refreshes produce no new snapshots or events
+- Failed refreshes never overwrite valid data
+- Refresh runs are transactional
+
+### Transparency
+
+Every ChangeEvent includes:
+- Project reference
+- Previous and new snapshot IDs
+- Field name and both values
+- First observation timestamp (when BlockSignal detected the change)
+- Previous observation timestamp (when the old value was last confirmed)
+- Source URL for verification
+- Classification
+- Deduplication key
+
+## Data Sources
+
+| Source | Type | Status | URL |
+|--------|------|--------|-----|
+| OKC Infrastructure Project Updates | HTML Scraper | Configured | <https://www.okc.gov/Infrastructure-Development/Infrastructure-Project-Updates> |
+| Vision OKC Projects | ArcGIS FeatureServer | Configured | <https://vision.okc.gov/projects> |
+| OKC Open Data Portal | JSON API | Configured (disabled by default) | <https://data.okc.gov> |
+
+### Limitations
+
+- **No pre-monitoring history** — Changes before first observation are unknown
+- **Source-dependent** — Can only track fields present in source data
+- **Pagination and API limits** — A missing record in one response does not mean deletion
+- **Not official** — Independent tool, not affiliated with City of Oklahoma City
+- **Verify directly** — Always check original sources for critical decisions
+
 ## Technology Stack
 
 - **Framework**: Next.js 14 (App Router)
@@ -28,15 +93,7 @@ BlockSignal OKC tracks changes to public infrastructure projects from official O
 - **Icons**: Lucide React
 - **Deployment**: Vercel-ready
 
-## Data Sources
-
-| Source | Type | Status |
-|--------|------|--------|
-| OKC Infrastructure Project Updates | HTML Scraper | Configured |
-| Vision OKC Projects | ArcGIS FeatureServer | Configured |
-| OKC Open Data Portal | JSON API | Configured (disabled) |
-
-## Getting Started
+## Run Locally
 
 ### Prerequisites
 
@@ -48,11 +105,11 @@ BlockSignal OKC tracks changes to public infrastructure projects from official O
 
 ```bash
 # Clone the repository
-git clone <repository-url>
-cd blocksignal-okc
+git clone https://github.com/FlashSpeedie/readme.git
+cd readme
 
 # Install dependencies
-npm install
+npm ci
 
 # Set up environment variables
 cp .env.example .env.local
@@ -102,7 +159,7 @@ npm run db:studio
 npm run db:seed
 ```
 
-## Running Tests
+## Testing
 
 ```bash
 # Unit and integration tests
@@ -120,6 +177,13 @@ npm run typecheck
 # Linting
 npm run lint
 ```
+
+### Test Results
+
+- **Unit/Integration Tests**: 31 tests passing (3 test files)
+- **Type Checking**: Passed
+- **Linting**: Passed (warnings only)
+- **Production Build**: Successful
 
 ## Source Refresh & Scheduling
 
@@ -231,97 +295,10 @@ Run migrations before deploying:
 npx prisma migrate deploy
 ```
 
-## Project Structure
+## Disclaimer
 
-```
-src/
-├── app/                    # Next.js App Router pages
-│   ├── api/               # API routes
-│   │   ├── cron/          # Scheduled refresh endpoint
-│   │   ├── projects/      # Projects API
-│   │   ├── changes/       # Changes API
-│   │   ├── sources/       # Sources API
-│   │   └── health/        # Health check endpoint
-│   ├── projects/          # Project pages
-│   ├── changes/           # Changes feed page
-│   ├── sources/           # Sources directory page
-│   ├── about/             # About/methodology page
-│   └── home/              # Home dashboard components
-├── components/
-│   ├── ui/                # Reusable UI components
-│   ├── layout/            # Header, Footer, Layout
-│   ├── projects/          # Project-specific components
-│   ├── changes/           # Change feed components
-│   └── sources/           # Source components
-├── lib/
-│   ├── adapters/          # Source adapters
-│   ├── db.ts              # Prisma client
-│   ├── queries.ts         # Database queries
-│   ├── refresh.ts         # Change detection engine
-│   ├── utils.ts           # Utility functions
-│   └── validation.ts      # Zod schemas
-├── types/                 # TypeScript types
-└── hooks/                 # React hooks
-prisma/
-├── schema.prisma          # Database schema
-└── seed.ts               # Seed script
-e2e/                       # Playwright E2E tests
-scripts/                   # Utility scripts
-public/
-├── manifest.json          # PWA manifest
-└── sw.js                  # Service worker
-```
-
-## Change Detection Engine
-
-The core of BlockSignal is its deterministic change detection:
-
-1. **Fetch** — Retrieve records from official sources via adapters
-2. **Validate** — Validate against Zod schemas
-3. **Normalize** — Convert to consistent schema, preserve meaning
-4. **Match** — Match to existing projects by stable external ID
-5. **Snapshot** — Create immutable snapshot with content fingerprint
-6. **Compare** — Field-level diff against previous snapshot
-7. **Record** — Create ChangeEvents for material differences
-8. **Deduplicate** — Stable keys prevent duplicate events
-
-### Idempotency
-
-- Identical refreshes produce no new snapshots or events
-- Failed refreshes never overwrite valid data
-- Refresh runs are transactional
-
-### Transparency
-
-Every ChangeEvent includes:
-- Project reference
-- Previous and new snapshot IDs
-- Field name and both values
-- First observation timestamp
-- Previous observation timestamp
-- Source URL
-- Classification
-- Deduplication key
-
-## Limitations
-
-- **No pre-monitoring history** — Changes before first observation are unknown
-- **Source-dependent** — Can only track fields present in source data
-- **Not official** — Independent tool, not affiliated with City of Oklahoma City
-- **Verify directly** — Always check original sources for critical decisions
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests: `npm run test && npm run typecheck && npm run lint`
-5. Submit a pull request
+BlockSignal OKC is an independent public information tool. It is not affiliated with, endorsed by, or connected to the City of Oklahoma City or any government agency. All data is sourced from publicly available government publications. Users should verify critical information directly with official sources.
 
 ## License
 
 MIT License — Built for WarriorHacks 2.0
-
-## Disclaimer
-
-BlockSignal OKC is an independent public information tool. It is not affiliated with, endorsed by, or connected to the City of Oklahoma City or any government agency. All data is sourced from publicly available government publications. Users should verify critical information directly with official sources.
