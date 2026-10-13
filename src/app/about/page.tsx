@@ -26,10 +26,10 @@ const METHODOLOGY_SECTIONS = [
       <div className="prose max-w-none">
         <p>BlockSignal OKC collects data from verified official sources:</p>
         <ul>
-          <li><strong>OKC Infrastructure Project Updates</strong> — okc.gov/Infrastructure-Development/Infrastructure-Project-Updates</li>
-          <li><strong>Vision OKC Projects</strong> — vision.okc.gov/projects (ArcGIS FeatureServer)</li>
-          <li><strong>OKC Open Data Portal</strong> — data.okc.gov (JSON/CSV APIs)</li>
-          <li><strong>City Public Works</strong> — okc.gov/Infrastructure-Development/Public-Works</li>
+          <li><strong>OKC Infrastructure Project Updates</strong> - okc.gov/Infrastructure-Development/Infrastructure-Project-Updates</li>
+          <li><strong>Vision OKC Projects</strong> - vision.okc.gov/projects (ArcGIS FeatureServer)</li>
+          <li><strong>OKC Open Data Portal</strong> - data.okc.gov (JSON/CSV APIs)</li>
+          <li><strong>City Public Works</strong> - okc.gov/Infrastructure-Development/Public-Works</li>
         </ul>
         <p>We prioritize stable, publicly accessible, structured data (JSON, CSV, ArcGIS FeatureServer) over fragile HTML scraping. Each source is documented with its retrieval method, field mapping, and known limitations.</p>
       </div>
@@ -99,9 +99,9 @@ const METHODOLOGY_SECTIONS = [
       <div className="prose max-w-none">
         <p>Three distinct timestamps are maintained:</p>
         <ul>
-          <li><strong>Government publication date</strong> — When the agency says the change occurred (if provided in source data)</li>
-          <li><strong>BlockSignal observation time</strong> — When our system first detected the change (firstObservedAt)</li>
-          <li><strong>Previous snapshot time</strong> — When the prior value was last confirmed</li>
+          <li><strong>Government publication date</strong> - When the agency says the change occurred (if provided in source data)</li>
+          <li><strong>BlockSignal observation time</strong> - When our system first detected the change (firstObservedAt)</li>
+          <li><strong>Previous snapshot time</strong> - When the prior value was last confirmed</li>
         </ul>
         <p>These are never conflated. The UI clearly labels each timestamp so users understand the difference between when a change happened and when we noticed it.</p>
       </div>
@@ -113,11 +113,11 @@ const METHODOLOGY_SECTIONS = [
     content: (
       <div className="prose max-w-none">
         <ul>
-          <li><strong>No historical data before monitoring began</strong> — We can only compare snapshots we have captured. Changes before our first observation are unknown.</li>
-          <li><strong>Source-dependent completeness</strong> — If a source omits a field, we cannot track changes to it.</li>
-          <li><strong>Pagination & API limits</strong> — Some sources paginate results; a missing record in one response does not mean deletion.</li>
-          <li><strong>Not an official government tool</strong> — BlockSignal OKC is an independent public information tool. It is not affiliated with or endorsed by the City of Oklahoma City.</li>
-          <li><strong>Verification encouraged</strong> — Every change links to the original source. Users should verify critical information directly.</li>
+          <li><strong>No historical data before monitoring began</strong> - We can only compare snapshots we have captured. Changes before our first observation are unknown.</li>
+          <li><strong>Source-dependent completeness</strong> - If a source omits a field, we cannot track changes to it.</li>
+          <li><strong>Pagination & API limits</strong> - Some sources paginate results; a missing record in one response does not mean deletion.</li>
+          <li><strong>Not an official government tool</strong> - BlockSignal OKC is an independent public information tool. It is not affiliated with or endorsed by the City of Oklahoma City.</li>
+          <li><strong>Verification encouraged</strong> - Every change links to the original source. Users should verify critical information directly.</li>
         </ul>
       </div>
     ),
@@ -216,7 +216,7 @@ export default function AboutPage() {
             The goal is to create a tool that Oklahoma City residents can continue using long after the event.
           </p>
           <p className="text-civic-600 mt-4 max-w-2xl">
-            Questions, suggestions, or source contributions? This is an open project — contributions are welcome.
+            Questions, suggestions, or source contributions? This is an open project - contributions are welcome.
           </p>
         </section>
       </div>

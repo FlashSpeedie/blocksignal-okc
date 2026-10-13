@@ -76,7 +76,7 @@ export function ChangeFeed({ changes, total, page, pageSize, totalPages, onPageC
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between text-sm text-civic-500">
-        <span>Showing {((page - 1) * pageSize) + 1}–{Math.min(page * pageSize, total)} of {total} changes</span>
+        <span>Showing {((page - 1) * pageSize) + 1}-{Math.min(page * pageSize, total)} of {total} changes</span>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={() => onPageChange(page - 1)} disabled={page <= 1}>
             Previous

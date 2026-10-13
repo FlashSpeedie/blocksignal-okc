@@ -14,7 +14,7 @@ const STATS = [
   { label: 'Tracked Projects', value: '0', icon: FolderOpen, href: '/projects', description: 'Projects being monitored' },
   { label: 'Total Changes', value: '0', icon: GitCompare, href: '/changes', description: 'Material changes detected' },
   { label: 'Active Sources', value: '0', icon: Database, href: '/sources', description: 'Official data sources' },
-  { label: 'Last Refresh', value: '—', icon: Clock, href: '/sources', description: 'Most recent update' },
+  { label: 'Last Refresh', value: '-', icon: Clock, href: '/sources', description: 'Most recent update' },
 ];
 
 const RECENT_CHANGES = [

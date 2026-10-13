@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export const metadata: Metadata = {
   title: {
-    default: 'BlockSignal OKC — Know what changed on your block',
+    default: 'BlockSignal OKC - Know what changed on your block',
     template: '%s | BlockSignal OKC',
   },
   description: 'Independent civic infrastructure transparency for Oklahoma City residents. Track changes to public infrastructure projects from official sources.',
@@ -20,14 +20,14 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: 'https://blocksignal.okc.gov',
     siteName: 'BlockSignal OKC',
-    title: 'BlockSignal OKC — Know what changed on your block',
+    title: 'BlockSignal OKC - Know what changed on your block',
     description: 'Independent civic infrastructure transparency for Oklahoma City residents.',
     images: [
       {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'BlockSignal OKC — Civic infrastructure transparency',
+        alt: 'BlockSignal OKC - Civic infrastructure transparency',
       },
     ],
   },

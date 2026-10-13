@@ -26,27 +26,27 @@ BlockSignal OKC collects data from verified official sources, normalizes it into
 
 ## Features
 
-- **Project Explorer** — Search and filter infrastructure projects by name, location, status, type, and source
-- **Change Feed** — Reverse-chronological feed of material field-level changes with before/after values
-- **Project Details** — Complete project information with full change history and source links
-- **Source Directory** — All monitored data sources with health status, last refresh times, and error reporting
-- **Source-Backed Change Detection** — Every change links to the original government record
-- **PWA Support** — Installable as a Progressive Web App with offline capability
-- **Mobile-First** — Responsive design with touch-friendly controls
-- **Accessible** — Semantic HTML, keyboard navigation, screen reader support
+- **Project Explorer** - Search and filter infrastructure projects by name, location, status, type, and source
+- **Change Feed** - Reverse-chronological feed of material field-level changes with before/after values
+- **Project Details** - Complete project information with full change history and source links
+- **Source Directory** - All monitored data sources with health status, last refresh times, and error reporting
+- **Source-Backed Change Detection** - Every change links to the original government record
+- **PWA Support** - Installable as a Progressive Web App with offline capability
+- **Mobile-First** - Responsive design with touch-friendly controls
+- **Accessible** - Semantic HTML, keyboard navigation, screen reader support
 
 ## How Change Detection Works
 
 The core of BlockSignal is its deterministic, snapshot-based change detection:
 
-1. **Fetch** — Retrieve records from official sources via adapters (HTML scraper, ArcGIS FeatureServer, JSON API)
-2. **Validate** — Validate against Zod schemas, reject malformed records
-3. **Normalize** — Convert to consistent schema while preserving meaning (trim whitespace, normalize dates, standardize numbers)
-4. **Match** — Match to existing projects by stable external ID; conservative matching prevents incorrect merges
-5. **Snapshot** — Create immutable snapshot with content fingerprint (hash of all structured fields)
-6. **Compare** — Field-level diff against previous accepted snapshot; ignore volatile fields (timestamps, formatting, HTML)
-7. **Record** — Create ChangeEvents for material differences with classification (status, schedule, funding, scope, location, document, metadata)
-8. **Deduplicate** — Stable deduplication keys prevent duplicate events
+1. **Fetch** - Retrieve records from official sources via adapters (HTML scraper, ArcGIS FeatureServer, JSON API)
+2. **Validate** - Validate against Zod schemas, reject malformed records
+3. **Normalize** - Convert to consistent schema while preserving meaning (trim whitespace, normalize dates, standardize numbers)
+4. **Match** - Match to existing projects by stable external ID; conservative matching prevents incorrect merges
+5. **Snapshot** - Create immutable snapshot with content fingerprint (hash of all structured fields)
+6. **Compare** - Field-level diff against previous accepted snapshot; ignore volatile fields (timestamps, formatting, HTML)
+7. **Record** - Create ChangeEvents for material differences with classification (status, schedule, funding, scope, location, document, metadata)
+8. **Deduplicate** - Stable deduplication keys prevent duplicate events
 
 ### Idempotency
 
@@ -76,11 +76,11 @@ Every ChangeEvent includes:
 
 ### Limitations
 
-- **No pre-monitoring history** — Changes before first observation are unknown
-- **Source-dependent** — Can only track fields present in source data
-- **Pagination and API limits** — A missing record in one response does not mean deletion
-- **Not official** — Independent tool, not affiliated with City of Oklahoma City
-- **Verify directly** — Always check original sources for critical decisions
+- **No pre-monitoring history** - Changes before first observation are unknown
+- **Source-dependent** - Can only track fields present in source data
+- **Pagination and API limits** - A missing record in one response does not mean deletion
+- **Not official** - Independent tool, not affiliated with City of Oklahoma City
+- **Verify directly** - Always check original sources for critical decisions
 
 ## Technology Stack
 
@@ -105,8 +105,8 @@ Every ChangeEvent includes:
 
 ```bash
 # Clone the repository
-git clone https://github.com/FlashSpeedie/readme.git
-cd readme
+git clone https://github.com/FlashSpeedie/blocksignal-okc.git
+cd blocksignal-okc
 
 # Install dependencies
 npm ci
@@ -301,4 +301,4 @@ BlockSignal OKC is an independent public information tool. It is not affiliated 
 
 ## License
 
-MIT License — Built for WarriorHacks 2.0
+MIT License - Built for WarriorHacks 2.0
