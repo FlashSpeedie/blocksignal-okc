@@ -1,0 +1,164 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SourceType {
+  HTML_SCRAPER
+  ARCGIS_FEATURE_SERVER
+  JSON_API
+  RSS_FEED
+  CSV_EXPORT
+  MANUAL
+}
+
+enum SourceHealth {
+  HEALTHY
+  DEGRADED
+  FAILED
+  UNKNOWN
+}
+
+enum ChangeClassification {
+  STATUS_CHANGE
+  SCHEDULE_CHANGE
+  FUNDING_CHANGE
+  SCOPE_CHANGE
+  LOCATION_CHANGE
+  DOCUMENT_ADDED
+  DOCUMENT_REMOVED
+  METADATA_CHANGE
+  NEW_PROJECT
+  PROJECT_REMOVED
+  OTHER
+}
+
+enum RefreshOutcome {
+  SUCCESS
+  PARTIAL_SUCCESS
+  FAILED
+  SKIPPED
+}
+
+model Source {
+  id                String       @id @default(cuid())
+  name              String
+  organization      String?
+  canonicalUrl      String
+  adapterType       SourceType
+  config            Json
+  enabled           Boolean      @default(true)
+  lastAttemptedAt   DateTime?
+  lastSuccessfulAt  DateTime?
+  lastError         String?
+  health            SourceHealth @default(UNKNOWN)
+  recordCount       Int          @default(0)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  projects          Project[]
+  refreshRuns       RefreshRun[]
+
+  @@index([enabled])
+  @@index([health])
+}
+
+model Project {
+  id                String   @id @default(cuid())
+  sourceId          String
+  externalId        String
+  slug              String   @unique
+  title             String
+  summary           String?
+  status            String?
+  location          String?
+  address           String?
+  latitude          Float?
+  longitude         Float?
+  projectType       String?
+  fundingAmount     Decimal? @db.Decimal(15, 2)
+  fundingSource     String?
+  startDate         DateTime?
+  estimatedEndDate  DateTime?
+  actualEndDate     DateTime?
+  fields            Json
+  sourceUrl         String
+  fingerprint       String
+  firstObservedAt   DateTime @default(now())
+  lastObservedAt    DateTime @default(now())
+  monitoringState   String   @default("ACTIVE")
+
+  source            Source   @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  snapshots         Snapshot[]
+  changeEvents      ChangeEvent[]
+
+  @@unique([sourceId, externalId])
+  @@index([slug])
+  @@index([status])
+  @@index([projectType])
+  @@index([lastObservedAt])
+}
+
+model Snapshot {
+  id                String   @id @default(cuid())
+  projectId         String
+  capturedAt        DateTime @default(now())
+  fieldValues       Json
+  fingerprint       String
+  sourceUrl         String
+  validationStatus  String   @default("VALID")
+  sourceVersion     String?
+
+  project           Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  changeEventsFrom  ChangeEvent[] @relation("PreviousSnapshot")
+  changeEventsTo    ChangeEvent[] @relation("NewSnapshot")
+
+  @@index([projectId, capturedAt])
+  @@index([fingerprint])
+}
+
+model ChangeEvent {
+  id                    String             @id @default(cuid())
+  projectId             String
+  previousSnapshotId    String?
+  newSnapshotId         String
+  fieldName             String
+  previousValue         String?
+  newValue              String?
+  firstObservedAt       DateTime           @default(now())
+  previousObservedAt    DateTime?
+  sourceUrl             String
+  classification        ChangeClassification
+  deduplicationKey      String             @unique
+
+  project               Project            @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  previousSnapshot      Snapshot?          @relation("PreviousSnapshot", fields: [previousSnapshotId], references: [id], onDelete: SetNull)
+  newSnapshot           Snapshot           @relation("NewSnapshot", fields: [newSnapshotId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, firstObservedAt])
+  @@index([classification])
+  @@index([deduplicationKey])
+}
+
+model RefreshRun {
+  id                 String         @id @default(cuid())
+  sourceId           String
+  startedAt          DateTime       @default(now())
+  finishedAt         DateTime?
+  fetchedRecords     Int            @default(0)
+  validRecords       Int            @default(0)
+  invalidRecords     Int            @default(0)
+  createdSnapshots   Int            @default(0)
+  detectedChanges    Int            @default(0)
+  outcome            RefreshOutcome @default(SUCCESS)
+  errorSummary       String?
+
+  source             Source         @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  @@index([sourceId, startedAt])
+  @@index([outcome])
+}
